@@ -1,0 +1,21 @@
+{
+    "db": {
+        "his_v3": {
+            "host": "localhost",
+            "port": 3306,
+            "user": "root",
+            "pass": "",
+            "name": "database"
+        }
+    },
+    "pattern": [
+        {
+            "id": "id",
+            "tuple": ["(.+)_id$"]
+        },
+        {
+            "id": "codesystem",
+            "tuple": ["(.+)_code$", "(.+)_system$"]
+        }
+    ]
+}

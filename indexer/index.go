@@ -10,6 +10,7 @@ import (
 type Index struct {
 	Name      string
 	GroupName string
+	GroupLen  int
 	Table     string
 	Fields    []string
 }

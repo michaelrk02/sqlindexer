@@ -8,6 +8,11 @@
             "name": "database"
         }
     },
+    "skip": [
+        "^created_user_id$",
+        "^updated_user_id$",
+        "^nullified_user_id$"
+    ],
     "pattern": [
         {
             "id": "id",
@@ -16,6 +21,14 @@
         {
             "id": "codesystem",
             "tuple": ["(.+)_code$", "(.+)_system$"]
+        },
+        {
+            "id": "statuscode",
+            "tuple": ["^(status_code)$"]
+        },
+        {
+            "id": "createddttm",
+            "tuple": ["^(created_dttm)$"]
         }
     ]
 }

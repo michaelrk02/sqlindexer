@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	ixr := indexer.NewIndexer(db, cfg.Pattern)
+	ixr := indexer.NewIndexer(db, cfg.Skip, cfg.Pattern)
 
 	tables, err := db.GetTables()
 	if err != nil {

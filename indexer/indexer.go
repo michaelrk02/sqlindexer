@@ -10,12 +10,19 @@ import (
 
 type Indexer struct {
 	db       *application.DB
+	skip     []*regexp.Regexp
 	patterns []config.Pattern
 }
 
-func NewIndexer(db *application.DB, patterns []config.Pattern) *Indexer {
+func NewIndexer(db *application.DB, skip []string, patterns []config.Pattern) *Indexer {
+	skipRE := make([]*regexp.Regexp, len(skip))
+	for i, pat := range skip {
+		skipRE[i] = regexp.MustCompile(pat)
+	}
+
 	return &Indexer{
 		db:       db,
+		skip:     skipRE,
 		patterns: patterns,
 	}
 }
@@ -45,6 +52,18 @@ func (ixr *Indexer) GetTableIndexesToCreate(table string) ([]Index, error) {
 			re := regexp.MustCompile(tup)
 
 			for _, col := range columns {
+				skipped := false
+				for _, skip := range ixr.skip {
+					if skip.MatchString(col) {
+						skipped = true
+						break
+					}
+				}
+
+				if skipped {
+					continue
+				}
+
 				match := re.FindStringSubmatch(col)
 				if match != nil {
 					keyName := GetKeyName(table, match[1])
@@ -55,6 +74,7 @@ func (ixr *Indexer) GetTableIndexesToCreate(table string) ([]Index, error) {
 						groupMap[groupName] = &Index{
 							Name:      keyName,
 							GroupName: groupName,
+							GroupLen:  len(pat.Tuple),
 							Table:     table,
 							Fields:    []string{},
 						}
@@ -69,5 +89,13 @@ func (ixr *Indexer) GetTableIndexesToCreate(table string) ([]Index, error) {
 	for _, group := range groupMap {
 		groupList[groupIdx[group.GroupName]] = *groupMap[group.GroupName]
 	}
-	return groupList, nil
+
+	groupListClean := []Index{}
+	for _, group := range groupList {
+		if len(group.Fields) == group.GroupLen {
+			groupListClean = append(groupListClean, group)
+		}
+	}
+
+	return groupListClean, nil
 }

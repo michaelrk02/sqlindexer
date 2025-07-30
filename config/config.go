@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	DB      map[string]DB `json:"db"`
+	Skip    []string      `json:"skip"`
 	Pattern []Pattern     `json:"pattern"`
 }
 
